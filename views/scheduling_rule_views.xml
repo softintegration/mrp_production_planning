@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+
+        <!-- Manufacturing Rule tree view inherited-->
+
+        <record id="scheduling_rule_tree_view_inherited" model="ir.ui.view">
+            <field name="name">scheduling.rule.tree.view.inherited</field>
+            <field name="model">scheduling.rule</field>
+            <field name="inherit_id" ref="record_scheduling.scheduling_rule_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='model_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Manufacturing Rule form view inherited-->
+
+        <record id="scheduling_rule_form_view_inherited" model="ir.ui.view">
+            <field name="name">scheduling.rule.form.view.inherited</field>
+            <field name="model">scheduling.rule</field>
+            <field name="inherit_id" ref="record_scheduling.scheduling_rule_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='model_id']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mrp_scheduling_rule_action" model="ir.actions.act_window">
+            <field name="name">Mrp Scheduling Rule</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">scheduling.rule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('model_name','=','mrp.production.request')]</field>
+            <field name="context">{'default_model_name':'mrp.production.request'}</field>
+            <field name="view_id" eval="False"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No Scheduling Rule found. Let's create one.
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="mrp_scheduling_rule_action"
+                  id="menu_mrp_scheduling_rule_action"
+                  parent="mrp.menu_mrp_configuration"
+                  name="MRP Scheduling rule"
+                  groups="mrp_production_planning.group_mrp_production_planning_user"
+                  sequence="80"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data>
+        <!-- Manufacturing Planning tree view -->
+        <record id="mrp_production_planning_tree_view" model="ir.ui.view">
+            <field name="name">mrp.production.planning.tree</field>
+            <field name="model">mrp.production.planning</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Plannings" multi_edit="1" decoration-warning="state == 'in_progress'"
+                           decoration-success="state == 'done'" decoration-danger="state == 'cancel'">
+                    <field name="name"/>
+                    <field name="date_start" />
+                    <field name="user_id"/>
+                    <field name="state" decoration-bf="state == 'draft'" decoration-warning="state == 'in_progress'"
+                           decoration-success="state == 'done'" decoration-danger="state == 'cancel'"
+                           widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Manufacturing Planning form view -->
+        <record id="mrp_production_planning_form_view" model="ir.ui.view">
+            <field name="name">mrp.production.planning.form</field>
+            <field name="model">mrp.production.planning</field>
+            <field name="arch" type="xml">
+                <form string="Manufacturing Plannings">
+                    <header>
+                        <button name="action_validate" string="Confirm" type="object" class="oe_highlight"
+                                states="draft" groups="mrp_production_planning.group_mrp_production_planning_user"/>
+                        <!--<button name="action_get_production_requests"
+                                context="{'overwrite_exiting_lines':True}"
+                                string="Get manufacturing requests"
+                                type="object" class="oe_highlight"
+                                states="draft" groups="mrp_production_planning.group_mrp_production_planning_user"/>-->
+                        <button name="action_cancel" string="Cancel" type="object"
+                                states="in_progress"
+                                groups="mrp_production_planning.group_mrp_production_planning_user"/>
+
+                        <!--<button name="action_make_production_order" string="Make Manufacturing order" type="object"
+                                class="oe_highlight" groups="mrp.group_mrp_user" states="validated"/>
+
+                        <button name="action_lock" string="Lock" type="object"
+                                attrs="{'invisible':['|',('locked','=',True),('state','in',('draft','cancel','done'))]}"
+                                groups="mrp_production_request.group_production_request_lock_unlock"/>
+                        <button name="action_unlock" string="Unlock" type="object"
+                                attrs="{'invisible':['|',('locked','=',False),('state','in',('draft','cancel','done'))]}"
+                                groups="mrp_production_request.group_production_request_lock_unlock"/>-->
+                        <field name="state" widget="statusbar" statusbar_visible="draft,in_progress,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" name="show_line_ids" icon="fa-list"
+                                    type="object" attrs="{'invisible':[('state','=','draft')]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="line_ids_count" class="mr4"/>
+                                        <span>Requests</span>
+                                    </span>
+                                    <span class="o_stat_text">
+                                        to plan
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Manufacturing Planning Reference" nolabel="1"/>
+                            </h1>
+                        </div>
+                        <field name="line_ids_count" invisible="1"/>
+                        <field name="company_id" invisible="1"/>
+                        <group>
+                            <group name="group_header_left">
+                                <field name="date_start"/>
+                                <field name="user_id" options="{'no_create':True,'no_edit':True}"
+                                       required="1"/>
+                            </group>
+                            <group name="group_header_right">
+                                <field name="date_done"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Manufacturing Planning filter view -->
+        <record id="mrp_production_planning_filter_view" model="ir.ui.view">
+            <field name="name">mrp.production.planning.filter.view</field>
+            <field name="model">mrp.production.planning</field>
+            <field name="arch" type="xml">
+                <search string="Search Manufacturing Planning">
+                    <field name="name" string="Manufacturing Planning"
+                           filter_domain="['|', ('name', 'ilike', self), ('origin', 'ilike', self)]"/>
+                    <separator/>
+                    <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="In progress" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                    <filter string="Cancelled" name="filter_cancel" domain="[('state', '=', 'cancel')]"/>
+                    <separator/>
+                    <group expand="0" string="Group By...">
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Manufacturing Planning line tree view -->
+        <record id="mrp_production_planning_line_tree_view" model="ir.ui.view">
+            <field name="name">mrp.production.planning.line.tree</field>
+            <field name="model">mrp.production.planning.line</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Plannings" editable="bottom">
+                    <header>
+                        <button name="action_schedule_production_requests" string="Schedule lines"
+                                    type="object" class="oe_highlight"
+                                    groups="mrp_production_planning.group_mrp_production_planning_user"/>
+                    </header>
+                    <field name="sequence" widget="handle"/>
+                    <field name="mrp_production_request_id" options="{'no_create':True,'no_edit':True}"/>
+                    <field name="date_request" readonly="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="quantity" readonly="1"/>
+                    <field name="quantity_produced" readonly="1"/>
+                    <field name="product_uom_id" optional="hide" readonly="1"/>
+                    <field name="date_desired"/>
+                    <field name="origin" optional="show" readonly="1"/>
+                    <field name="average" optional="hide" readonly="1"/>
+                    <field name="state" decoration-bf="state == 'draft'" decoration-warning="state == 'waiting'" decoration-info="state == 'validated'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'" widget="badge"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Manufacturing Planning action -->
+        <record id="mrp_production_planning_action" model="ir.actions.act_window">
+            <field name="name">Manufacturing Plannings</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production.planning</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="mrp_production_planning_filter_view"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No manufacturing planning found. Let's create one.
+                </p>
+            </field>
+        </record>
+
+        <menuitem action="mrp_production_planning_action"
+                  id="menu_mrp_production_planning_action"
+                  parent="mrp.mrp_planning_menu_root"
+                  name="Manufacturing planning"
+                  groups="mrp_production_planning.group_mrp_production_planning_user"
+                  sequence="10"/>
+
+
+
+
+    </data>
+</odoo>

@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_production_planning_user,mrp.production.planning.user,model_mrp_production_planning,group_mrp_production_planning_user,1,1,1,1
+access_mrp_production_planning_line_user,mrp.production.planning.line.user,model_mrp_production_planning_line,group_mrp_production_planning_user,1,1,1,1
+
