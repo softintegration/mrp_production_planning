@@ -125,12 +125,13 @@
                     <field name="mrp_production_request_id" options="{'no_create':True,'no_edit':True}"/>
                     <field name="date_request" readonly="1"/>
                     <field name="product_id" readonly="1"/>
-                    <field name="quantity" readonly="1"/>
+                    <field name="quantity" required="1" attrs="{'readonly':[('planning_state','not in',('draft','in_progress'))]}"/>
                     <field name="quantity_produced" readonly="1"/>
                     <field name="product_uom_id" optional="hide" readonly="1"/>
                     <field name="date_desired"/>
                     <field name="origin" optional="show" readonly="1"/>
                     <field name="average" optional="hide" readonly="1"/>
+                    <field name="planning_state" invisible="1"/>
                     <field name="state"
                            decoration-bf="state == 'draft'"
                            decoration-warning="state == 'waiting'"

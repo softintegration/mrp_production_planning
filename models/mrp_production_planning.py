@@ -133,16 +133,18 @@ class MrpProductionPlanningLine(models.Model):
                                                 domain=[('state','=','validated')])
     product_id = fields.Many2one('product.product', 'Product', related='mrp_production_request_id.product_id')
     quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure',
-                            related='mrp_production_request_id.quantity')
+                            related='mrp_production_request_id.quantity',store=True,readonly=False)
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure',
                                      related='mrp_production_request_id.product_uom_id')
     origin = fields.Char('Source', related='mrp_production_request_id.origin')
     date_request = fields.Datetime('Date', related='mrp_production_request_id.date_request')
     date_desired = fields.Datetime('Desired Date', related='mrp_production_request_id.date_desired')
     quantity_produced = fields.Float(string='Produced Quantity',related='mrp_production_request_id.quantity_produced')
+    planning_state = fields.Selection(string='Planning Status',related='planning_id.state')
     state = fields.Selection(string='Status',related='mrp_production_request_id.state')
     average = fields.Float(string="Average",
                            help="The value of this field will be used as priority indicator of the Manufacturing request in the planning")
+
 
     @api.constrains('mrp_production_request_id')
     def _check_production_requests_uniqueness(self):
