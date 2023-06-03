@@ -131,7 +131,14 @@
                     <field name="date_desired"/>
                     <field name="origin" optional="show" readonly="1"/>
                     <field name="average" optional="hide" readonly="1"/>
-                    <field name="state" decoration-bf="state == 'draft'" decoration-warning="state == 'waiting'" decoration-info="state == 'validated'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'" widget="badge"/>
+                    <field name="state"
+                           decoration-bf="state == 'draft'"
+                           decoration-warning="state == 'waiting'"
+                           decoration-info="state == 'validated'"
+                           decoration-success="state == 'done'"
+                           decoration-danger="state == 'cancel'"
+                           widget="badge"
+                           invisible="1"/>
                 </tree>
             </field>
         </record>

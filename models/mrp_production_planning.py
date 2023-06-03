@@ -124,6 +124,7 @@ class MrpProductionPlanning(models.Model):
 
 class MrpProductionPlanningLine(models.Model):
     _name = 'mrp.production.planning.line'
+    _description = 'Manufacturing planning line'
     _order = 'sequence'
 
     planning_id = fields.Many2one('mrp.production.planning', required=True, ondelete='cascade')
