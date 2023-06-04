@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-27 14:32+0000\n"
-"PO-Revision-Date: 2023-05-27 14:32+0000\n"
+"POT-Creation-Date: 2023-06-04 20:20+0000\n"
+"PO-Revision-Date: 2023-06-04 20:20+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -89,11 +89,24 @@ msgstr "Brouillon"
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
+msgid "Can not add line to Done/Cancelled Planning!"
+msgstr "Impossible d'ajouter une ligne dans un Planning Terminé/Annulé"
+
+#. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#, python-format
+msgid "Can not remove line from Done/Cancelled Planning!"
+msgstr "Impossible de supprimer une ligne dans un Planning Terminé/Annulé"
+
+#. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#, python-format
 msgid ""
 "Can not remove the Manufacturing planning,you have to check the state or to "
 "cancel the planning"
 msgstr ""
-"Impossible de supprimer le planning de fabrication, vous devez l'annuler d'abord "
+"Impossible de supprimer le planning de fabrication, vous devez l'annuler "
+"d'abord "
 
 #. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
@@ -104,7 +117,7 @@ msgstr "Annuler"
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
 msgid "Canceled"
-msgstr "Annulée"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
@@ -136,7 +149,7 @@ msgstr ""
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__date_request
 msgid "Date"
-msgstr "Date"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__date_start
@@ -167,6 +180,11 @@ msgstr "Terminé"
 #, python-format
 msgid "Draft"
 msgstr "Brouillon"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__in_progress
+msgid "En cours"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__done
@@ -228,7 +246,6 @@ msgstr ""
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
-#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__in_progress
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 #, python-format
 msgid "In progress"
@@ -323,6 +340,11 @@ msgid "Manufacturing planning"
 msgstr "Planning de fabrication"
 
 #. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_mrp_production_planning_line
+msgid "Manufacturing planning line"
+msgstr ""
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__mrp_production_request_id
 msgid "Manufacturing request"
 msgstr "Demande de fabrication"
@@ -363,7 +385,7 @@ msgstr ""
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
 msgid "New"
-msgstr "Nouveau"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__activity_calendar_event_id
@@ -403,8 +425,8 @@ msgid ""
 "No Scheduling rules have been detected,please check that there are "
 "configured scheduling rules that can be applied!"
 msgstr ""
-"Aucune règle d'ordonnancement détectée, veuillez vérifier qu'il existe"
-" des règles d'ordonnancement configurées et applicables!"
+"Aucune règle d'ordonnancement détectée, veuillez vérifier qu'il existe des "
+"règles d'ordonnancement configurées et applicables!"
 
 #. module: mrp_production_planning
 #: model_terms:ir.actions.act_window,help:mrp_production_planning.mrp_production_planning_action
@@ -439,12 +461,17 @@ msgstr ""
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__planning_id
 msgid "Planning"
-msgstr "Planning"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.constraint,message:mrp_production_planning.constraint_mrp_production_planning_name_company_uniq
 msgid "Planning Reference must be unique !"
 msgstr "La référence du planning doit être unique!"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__planning_state
+msgid "Planning Status"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__quantity_produced
@@ -470,8 +497,7 @@ msgstr "Référence"
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning_line__origin
 msgid ""
 "Reference of the document that generated this production order request."
-msgstr ""
-"Référence du document qui a généré cette demande de fabrication."
+msgstr "Référence du document qui a généré cette demande de fabrication."
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__quantity
@@ -517,7 +543,7 @@ msgstr "Certaines demandes de fabrication sont insérées plusieurs fois!"
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__origin
 msgid "Source"
-msgstr "Source"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__state
@@ -528,7 +554,7 @@ msgstr "Status"
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__state
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 msgid "Status"
-msgstr "Status"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning__activity_state
@@ -545,8 +571,8 @@ msgid ""
 "The value of this field will be used as priority indicator of the "
 "Manufacturing request in the planning"
 msgstr ""
-"La valeur de ce champ sera utilisée comme indicateur de priorité du "
-"Demande de fabrication dans le planning"
+"La valeur de ce champ sera utilisée comme indicateur de priorité du Demande "
+"de fabrication dans le planning"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning__activity_exception_decoration
@@ -581,9 +607,4 @@ msgstr ""
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning__website_message_ids
 msgid "Website communication history"
-msgstr ""
-
-#. module: mrp_production_planning
-#: model:ir.model,name:mrp_production_planning.model_mrp_production_planning_line
-msgid "mrp.production.planning.line"
 msgstr ""

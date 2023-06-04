@@ -25,7 +25,8 @@ class MrpProductionPlanning(models.Model):
                               ('in_progress', _('In progress')),
                               ('done', _('Done')),
                               ('cancel', _('Canceled'))], default='draft', required=True)
-    line_ids = fields.One2many('mrp.production.planning.line', 'planning_id')
+    line_ids = fields.One2many('mrp.production.planning.line', 'planning_id'
+                               ,states={'draft': [('readonly', False)],'in_progress':[('readonly', False)]}, readonly=True)
     line_ids_count = fields.Integer(compute='_compute_line_ids_count')
 
     @api.depends('line_ids')
@@ -132,8 +133,7 @@ class MrpProductionPlanningLine(models.Model):
     mrp_production_request_id = fields.Many2one('mrp.production.request', string="Manufacturing request", required=True,
                                                 domain=[('state','=','validated')])
     product_id = fields.Many2one('product.product', 'Product', related='mrp_production_request_id.product_id')
-    quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure',
-                            related='mrp_production_request_id.quantity',store=True,readonly=False)
+    quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure',store=True,readonly=False)
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure',
                                      related='mrp_production_request_id.product_uom_id')
     origin = fields.Char('Source', related='mrp_production_request_id.origin')
@@ -145,6 +145,26 @@ class MrpProductionPlanningLine(models.Model):
     average = fields.Float(string="Average",
                            help="The value of this field will be used as priority indicator of the Manufacturing request in the planning")
 
+    @api.model_create_multi
+    def create(self, vals):
+        res = super(MrpProductionPlanningLine,self).create(vals)
+        for rec in res:
+            if rec.planning_state in ('done','cancel'):
+                raise ValidationError(_("Can not add line to Done/Cancelled Planning!"))
+        return res
+
+    def unlink(self):
+        for rec in self:
+            if rec.planning_state in ('done','cancel'):
+                raise ValidationError(_("Can not remove line from Done/Cancelled Planning!"))
+        return super(MrpProductionPlanningLine,self).unlink()
+
+
+
+    @api.onchange('mrp_production_request_id')
+    def _onchange_mrp_production_request_id(self):
+        if self.mrp_production_request_id:
+            self.quantity = self.mrp_production_request_id.quantity
 
     @api.constrains('mrp_production_request_id')
     def _check_production_requests_uniqueness(self):
