@@ -3,8 +3,13 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 AUTHORISED_STATES_FOR_REMOVE = ('draft', 'cancel')
+DATE_ZERO = datetime.strptime('1970-01-01', DEFAULT_SERVER_DATE_FORMAT)
+
 
 
 class MrpProductionPlanning(models.Model):
@@ -16,11 +21,11 @@ class MrpProductionPlanning(models.Model):
 
     name = fields.Char('Reference', copy=False, readonly=True, default=lambda x: _('New'))
     date_start = fields.Datetime(string="Date from", help="Manufacturing Planning date start", required=True,
-                                states={'draft': [('readonly', False)]}, readonly=True)
+                                 states={'draft': [('readonly', False)]}, readonly=True)
     date_done = fields.Datetime(string="Validation Date", help="Manufacturing Planning validation date", required=False,
-                              states={'draft': [('readonly', False)]}, readonly=True)
+                                states={'draft': [('readonly', False)]}, readonly=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
-    user_id = fields.Many2one('res.users',string='Responsible',default=lambda self: self.env.user)
+    user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
     state = fields.Selection([('draft', _('Draft')),
                               ('in_progress', _('In progress')),
                               ('done', _('Done')),
@@ -28,6 +33,16 @@ class MrpProductionPlanning(models.Model):
     line_ids = fields.One2many('mrp.production.planning.line', 'planning_id'
                                ,states={'draft': [('readonly', False)],'in_progress':[('readonly', False)]}, readonly=True)
     line_ids_count = fields.Integer(compute='_compute_line_ids_count')
+    planned_workorder_ids = fields.One2many('mrp.workorder', 'planning_id', 'Work Orders')
+    planned_workorder_ids_count = fields.Integer(compute='_compute_planned_workorder_ids_count')
+
+    def _planned_manufacturing_orders(self):
+        return self.mapped("planned_workorder_ids").mapped("production_id")
+
+    @api.depends('planned_workorder_ids')
+    def _compute_planned_workorder_ids_count(self):
+        for each in self:
+            each.planned_workorder_ids_count = len(each.planned_workorder_ids)
 
     @api.depends('line_ids')
     def _compute_line_ids_count(self):
@@ -43,10 +58,8 @@ class MrpProductionPlanning(models.Model):
                     planning_name=each.name, date_from=each.date_from, date_to=each.date_to,
                 ))"""
 
-
-
     def action_validate(self):
-        #self._check_lines_to_schedule()
+        # self._check_lines_to_schedule()
         for each in self:
             dynamic_prefix_fields = self._build_dynamic_prefix_fields()
             each.name = self.env['ir.sequence'].with_context(dynamic_prefix_fields=dynamic_prefix_fields).next_by_code(
@@ -81,8 +94,6 @@ class MrpProductionPlanning(models.Model):
                 each.line_ids.unlink()
             each.write({'line_ids': [(0, 0, {'mrp_production_request_id': request.id}) for request in requests]})
 
-
-
     @api.model
     def _get_production_requests_by_period(self, date_from, date_to, reference_date='date_desired',
                                            dates_included=False):
@@ -96,18 +107,88 @@ class MrpProductionPlanning(models.Model):
         requests = self.env['mrp.production.request'].search(domain)
         return requests
 
-
     def show_line_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
         return {
             'name': _('Manufacturing requests to plan'),
             'view_mode': 'tree',
-            'views': [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'),],
+            'views': [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'), ],
             'res_model': 'mrp.production.planning.line',
             'type': 'ir.actions.act_window',
             'target': 'current',
-            'context':{'default_planning_id':self.id},
+            'context': {'default_planning_id': self.id},
+            'domain': domain,
+        }
+
+    def action_create_workorder_planning(self):
+        return self._action_create_workorder_planning()
+
+    def _action_create_workorder_planning(self):
+        for each in self:
+            orders_to_plan = self.env['mrp.production']
+            if each.env.context.get('overwrite_exiting_lines', False) and each._planned_manufacturing_orders():
+                # unlink the Manufacturing order to auto removing the related workorders
+                each._planned_manufacturing_orders().unlink()
+            # loop on planning lines by the sequence order (that has been calculated by the scheduler)
+            next_wo = {}
+            for planning_line in each.line_ids:
+                planning_previous_wo = False
+                order = planning_line.mrp_production_request_id._action_make_production_order(quantity=planning_line.quantity)
+                order.date_planned_start = each.date_start
+                orders_to_plan |= order
+                for workorder in order.workorder_ids:
+                    workorder.write({'planning_id': each.id})
+                    next_wo.update({planning_previous_wo:workorder})
+                    planning_previous_wo = workorder
+            for workorder,next_workorder in next_wo.items():
+                try:
+                    workorder.write({'next_work_order_id':next_workorder.id})
+                except AttributeError as ae:
+                    continue
+            for order in orders_to_plan:
+                order._plan_workorders()
+
+    def _plan_workorders(self):
+        self.ensure_one()
+        date_start = False
+        # temporary planning of workcenters used by planning to avoid using already assigned workcenter (assigned in this method)
+        workcenters_date_start = {}
+        for workorder in self.planned_workorder_ids:
+            # first of all,we have to get the previous workorder because in all cases we can not start workorder before that the previous one finished
+            previous_wo = workorder._previous_workorder()
+            if not workcenters_date_start.get(workorder.workcenter_id.id,False):
+                # in this case the date start of the workorder is the greater one between the date start of the planning desired by the planner
+                # and planned date finished of the previous workorder
+                date_start = max(self.date_start,previous_wo.date_planned_finished or DATE_ZERO)
+            else:
+                # in the second case,the same workcenter that we will use can be already planned so we have to take the greater date between
+                # the leave date finish of the current workcenter and planned date finished of the previous workorder
+                # not the or in the second parameter,in the case there is no previous workorder,the workorder with the free workcenter
+                # will planned to start immediatly after the free of the workcenter
+                date_start = max(workcenters_date_start[workorder.workcenter_id.id],previous_wo.date_planned_finished
+                                 or workcenters_date_start[workorder.workcenter_id.id])
+            workorder_leave_dict = workorder._preprare_leave(date_start)
+            workorder.leave_id = self.env['resource.calendar.leaves'].create(workorder_leave_dict)
+            workcenters_date_start.update({workorder.workcenter_id.id:workorder.leave_id.date_to})
+
+    def _plan_manufacturing_orders(self):
+        manufacturing_orders = self._planned_manufacturing_orders()
+        for mo in manufacturing_orders:
+            mo.date_planned_start = min(mo.workorder_ids.mapped("date_planned_start"))
+            mo.date_planned_finished = max(mo.workorder_ids.mapped("date_planned_finished"))
+
+
+    def show_planned_workorder_ids(self):
+        self.ensure_one()
+        domain = [('planning_id', 'in', self.ids)]
+        return {
+            'name': _('Planned workorders'),
+            'view_mode': 'tree',
+            'views': [(self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'), ],
+            'res_model': 'mrp.workorder',
+            'type': 'ir.actions.act_window',
+            'target': 'current',
             'domain': domain,
         }
 
@@ -131,7 +212,7 @@ class MrpProductionPlanningLine(models.Model):
     planning_id = fields.Many2one('mrp.production.planning', required=True, ondelete='cascade')
     sequence = fields.Integer('Sequence', help="Used to manually re-order the line")
     mrp_production_request_id = fields.Many2one('mrp.production.request', string="Manufacturing request", required=True,
-                                                domain=[('state','=','validated')])
+                                                domain=[('state', '=', 'validated')])
     product_id = fields.Many2one('product.product', 'Product', related='mrp_production_request_id.product_id')
     quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure',store=True,readonly=False)
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure',
@@ -179,7 +260,8 @@ class MrpProductionPlanningLine(models.Model):
             raise ValidationError(_("No Manufacturing requests have been selected!"))
         lines_average = self.env['scheduling.rule']._schedule_records(self.mapped("mrp_production_request_id"))
         if not lines_average:
-            raise ValidationError(_("No Scheduling rules have been detected,please check that there are configured scheduling rules that can be applied!"))
+            raise ValidationError(
+                _("No Scheduling rules have been detected,please check that there are configured scheduling rules that can be applied!"))
         self._schedule(lines_average)
 
     @api.model

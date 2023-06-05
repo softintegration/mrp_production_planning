@@ -32,6 +32,12 @@
                                 string="Get manufacturing requests"
                                 type="object" class="oe_highlight"
                                 states="draft" groups="mrp_production_planning.group_mrp_production_planning_user"/>-->
+                        <button name="action_create_workorder_planning"
+                                context="{'overwrite_exiting_lines':True}"
+                                string="Plan manufacturing requests"
+                                type="object" class="oe_highlight"
+                                states="in_progress" groups="mrp_production_planning.group_mrp_production_planning_user"/>
+
                         <button name="action_cancel" string="Cancel" type="object"
                                 states="in_progress"
                                 groups="mrp_production_planning.group_mrp_production_planning_user"/>
@@ -58,6 +64,18 @@
                                     </span>
                                     <span class="o_stat_text">
                                         to plan
+                                    </span>
+                                </div>
+                            </button>
+                            <button class="oe_stat_button" name="show_planned_workorder_ids" icon="fa-list"
+                                    type="object" attrs="{'invisible':[('planned_workorder_ids_count','=',0)]}">
+                                <div class="o_field_widget o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="planned_workorder_ids_count" class="mr4"/>
+                                        <span>Planned</span>
+                                    </span>
+                                    <span class="o_stat_text">
+                                        workorders
                                     </span>
                                 </div>
                             </button>

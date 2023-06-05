@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-04 20:20+0000\n"
-"PO-Revision-Date: 2023-06-04 20:20+0000\n"
+"POT-Creation-Date: 2023-06-05 15:15+0000\n"
+"PO-Revision-Date: 2023-06-05 15:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -35,6 +35,22 @@ msgstr ""
 "<span class=\"o_stat_text\">\n"
 "                                        à planifier\n"
 "                                    </span>"
+
+#. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
+msgid ""
+"<span class=\"o_stat_text\">\n"
+"                                        workorders\n"
+"                                    </span>"
+msgstr ""
+"<span class=\"o_stat_text\">\n"
+"                                        planifié\n"
+"                                    </span>"
+
+#. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
+msgid "<span>Planned</span>"
+msgstr "<span>O.Travail</span>"
 
 #. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
@@ -84,7 +100,7 @@ msgstr "Moyenne"
 #. module: mrp_production_planning
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__draft
 msgid "Brouillon"
-msgstr "Brouillon"
+msgstr ""
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
@@ -459,7 +475,24 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
+msgid "Plan manufacturing requests"
+msgstr "Planifier"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__planned_workorder_ids_count
+msgid "Planned Workorder Ids Count"
+msgstr ""
+
+#. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#, python-format
+msgid "Planned workorders"
+msgstr "Ordres de travail planifié"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__planning_id
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_workorder__planning_id
 msgid "Planning"
 msgstr ""
 
@@ -503,6 +536,11 @@ msgstr "Référence du document qui a généré cette demande de fabrication."
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__quantity
 msgid "Requested Quantity"
 msgstr "Quantité demandée"
+
+#. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_resource_calendar_leaves
+msgid "Resource Time Off Detail"
+msgstr "Détails des congés de la ressource"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__user_id
@@ -607,4 +645,19 @@ msgstr ""
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning__website_message_ids
 msgid "Website communication history"
+msgstr ""
+
+#. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_mrp_workorder
+msgid "Work Order"
+msgstr "Ordre de travail"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__planned_workorder_ids
+msgid "Work Orders"
+msgstr "Ordres de travail"
+
+#. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_mrp_production_planning_line
+msgid "mrp.production.planning.line"
 msgstr ""
