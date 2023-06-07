@@ -10,9 +10,12 @@ class MrpWorkorder(models.Model):
     _inherit = 'mrp.workorder'
 
     planning_id = fields.Many2one('mrp.production.planning')
+    workcenter_id = fields.Many2one(
+        'mrp.workcenter', 'Work Center', required=True,
+        states={'done': [('readonly', True)], 'cancel': [('readonly', True)], 'progress': [('readonly', True)]},
+        group_expand=False, check_company=True)
 
-
-    def _preprare_leave(self, date_start):
+    """def _preprare_leave(self, date_start):
         res = {'name': self.display_name,
                'calendar_id': self.workcenter_id.resource_calendar_id.id,
                'date_from': date_start,
@@ -22,9 +25,7 @@ class MrpWorkorder(models.Model):
                }
         return res
 
-    def _previous_workorder(self,order='date_planned_finished DESC'):
-        """ This method return the workorder that is just before the current workorder"""
+    def _previous_workorder(self, order='date_planned_finished DESC'):
         domain = [('next_work_order_id', 'in', self.ids)]
-        return self.search(domain,limit=1,order=order)
-
-
+        return self.search(domain, limit=1, order=order)
+"""

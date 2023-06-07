@@ -149,7 +149,7 @@ class MrpProductionPlanning(models.Model):
             for order in orders_to_plan:
                 order._plan_workorders()
 
-    def _plan_workorders(self):
+    """def _plan_workorders(self):
         self.ensure_one()
         date_start = False
         # temporary planning of workcenters used by planning to avoid using already assigned workcenter (assigned in this method)
@@ -178,7 +178,7 @@ class MrpProductionPlanning(models.Model):
             mo.date_planned_start = min(mo.workorder_ids.mapped("date_planned_start"))
             mo.date_planned_finished = max(mo.workorder_ids.mapped("date_planned_finished"))
 
-
+   """
     def show_planned_workorder_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
@@ -191,7 +191,7 @@ class MrpProductionPlanning(models.Model):
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',
             'target': 'current',
-            'context': {'default_planning_id': self.id},
+            'context': {'default_planning_id': self.id,},
             'domain': domain,
         }
 
