@@ -184,11 +184,14 @@ class MrpProductionPlanning(models.Model):
         domain = [('planning_id', 'in', self.ids)]
         return {
             'name': _('Planned workorders'),
-            'view_mode': 'tree',
-            'views': [(self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'), ],
+            'view_mode': 'calendar,tree',
+            'views': [(self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
+                      (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
+                      (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'),],
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',
             'target': 'current',
+            'context': {'default_planning_id': self.id},
             'domain': domain,
         }
 

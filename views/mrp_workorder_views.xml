@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="workcenter_line_calendar" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.calendar</field>
+        <field name="model">mrp.workorder</field>
+        <field name="arch" type="xml">
+            <calendar date_stop="date_planned_finished"
+                      date_start="date_planned_start"
+                      string="Operations"
+                      color="workcenter_id"
+                      event_limit="5"
+                      delete="0" create="0"
+                      mode="month">
+                <field name="workcenter_id" filters="1"/>
+                <field name="production_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+</odoo>
