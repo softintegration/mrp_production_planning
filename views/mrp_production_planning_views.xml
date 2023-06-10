@@ -33,7 +33,7 @@
                                 type="object" class="oe_highlight"
                                 states="draft" groups="mrp_production_planning.group_mrp_production_planning_user"/>-->
                         <button name="action_create_workorder_planning"
-                                context="{'overwrite_exiting_lines':True}"
+                                context="{'overwrite_exiting_lines':True,'force_start_date':True}"
                                 string="Plan manufacturing requests"
                                 type="object" class="oe_highlight"
                                 states="in_progress" groups="mrp_production_planning.group_mrp_production_planning_user"/>

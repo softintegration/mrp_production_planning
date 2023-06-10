@@ -25,7 +25,8 @@ class MrpProductionPlanning(models.Model):
     date_done = fields.Datetime(string="Validation Date", help="Manufacturing Planning validation date", required=False,
                                 states={'draft': [('readonly', False)]}, readonly=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
-    user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user)
+    user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user,
+                              states={'draft': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', _('Draft')),
                               ('in_progress', _('In progress')),
                               ('done', _('Done')),
