@@ -78,10 +78,14 @@ class MrpProductionPlanning(models.Model):
         self.write({'state': 'in_progress'})
 
     def action_cancel(self):
+        self._remove_related_manufacturings()
         return self._action_cancel()
 
     def _action_cancel(self):
         self.write({'state': 'cancel'})
+
+    def _remove_related_manufacturings(self):
+        self._planned_manufacturing_orders().unlink()
 
     def _check_lines_to_schedule(self):
         for each in self:
