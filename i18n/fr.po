@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-05 15:15+0000\n"
-"PO-Revision-Date: 2023-06-05 15:15+0000\n"
+"POT-Creation-Date: 2023-06-12 22:06+0000\n"
+"PO-Revision-Date: 2023-06-12 22:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -261,6 +261,14 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production.py:0
+#, python-format
+msgid ""
+"Impossible to plan the workorder. Please check the workcenter "
+"availabilities."
+msgstr ""
+
+#. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 #, python-format
@@ -378,6 +386,11 @@ msgid "Manufacturing requests to plan are required!"
 msgstr "Les demandes de fabrication à planifier sont obligatoire"
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__merge_request_ids
+msgid "Merge with"
+msgstr "Fusionner avec"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__message_has_error
 msgid "Message Delivery error"
 msgstr ""
@@ -475,6 +488,11 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.workcenter_line_calendar
+msgid "Operations"
+msgstr "Opérations"
+
+#. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
 msgid "Plan manufacturing requests"
 msgstr "Planifier"
@@ -522,6 +540,11 @@ msgid "Product Unit of Measure"
 msgstr "Article Udm"
 
 #. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_mrp_production
+msgid "Production Order"
+msgstr "Ordre de fabrication"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__name
 msgid "Reference"
 msgstr "Référence"
@@ -536,11 +559,6 @@ msgstr "Référence du document qui a généré cette demande de fabrication."
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__quantity
 msgid "Requested Quantity"
 msgstr "Quantité demandée"
-
-#. module: mrp_production_planning
-#: model:ir.model,name:mrp_production_planning.model_resource_calendar_leaves
-msgid "Resource Time Off Detail"
-msgstr "Détails des congés de la ressource"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__user_id
@@ -604,6 +622,13 @@ msgid ""
 msgstr ""
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning_line__merge_request_ids
+msgid ""
+"The manufacturing requests added here will be merged with the current "
+"Request and will be exposed to planner as one single request"
+msgstr ""
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning_line__average
 msgid ""
 "The value of this field will be used as priority indicator of the "
@@ -648,6 +673,11 @@ msgid "Website communication history"
 msgstr ""
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_workorder__workcenter_id
+msgid "Work Center"
+msgstr "Poste de Travail"
+
+#. module: mrp_production_planning
 #: model:ir.model,name:mrp_production_planning.model_mrp_workorder
 msgid "Work Order"
 msgstr "Ordre de travail"
@@ -656,8 +686,3 @@ msgstr "Ordre de travail"
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__planned_workorder_ids
 msgid "Work Orders"
 msgstr "Ordres de travail"
-
-#. module: mrp_production_planning
-#: model:ir.model,name:mrp_production_planning.model_mrp_production_planning_line
-msgid "mrp.production.planning.line"
-msgstr ""

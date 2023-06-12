@@ -11,7 +11,6 @@ AUTHORISED_STATES_FOR_REMOVE = ('draft', 'cancel')
 DATE_ZERO = datetime.strptime('1970-01-01', DEFAULT_SERVER_DATE_FORMAT)
 
 
-
 class MrpProductionPlanning(models.Model):
     """ Manufacturing Orders Planning"""
     _name = 'mrp.production.planning'
@@ -32,7 +31,8 @@ class MrpProductionPlanning(models.Model):
                               ('done', _('Done')),
                               ('cancel', _('Canceled'))], default='draft', required=True)
     line_ids = fields.One2many('mrp.production.planning.line', 'planning_id'
-                               ,states={'draft': [('readonly', False)],'in_progress':[('readonly', False)]}, readonly=True)
+                               , states={'draft': [('readonly', False)], 'in_progress': [('readonly', False)]},
+                               readonly=True)
     line_ids_count = fields.Integer(compute='_compute_line_ids_count')
     planned_workorder_ids = fields.One2many('mrp.workorder', 'planning_id', 'Work Orders')
     planned_workorder_ids_count = fields.Integer(compute='_compute_planned_workorder_ids_count')
@@ -137,18 +137,26 @@ class MrpProductionPlanning(models.Model):
                 each._planned_manufacturing_orders().unlink()
             # loop on planning lines by the sequence order (that has been calculated by the scheduler)
             next_wo = {}
+            # planning lines can be merged so we have to track the merged lines because they can be used before that they are detected by the loop
+            already_used_lines = []
             for planning_line in each.line_ids:
-                planning_previous_wo = False
-                order = planning_line.mrp_production_request_id._action_make_production_order(quantity=planning_line.quantity)
+                if planning_line.id in already_used_lines:
+                    continue
+                sibling_lines = planning_line._get_sibling_lines()
+                quantity_to_plan = sum(sibling_lines.mapped("quantity"))
+                already_used_lines.extend(sibling_lines.ids)
+                order = planning_line.mrp_production_request_id._action_make_production_order(
+                    quantity=quantity_to_plan)
                 order.date_planned_start = each.date_start
                 orders_to_plan |= order
+                planning_previous_wo = False
                 for workorder in order.workorder_ids:
                     workorder.write({'planning_id': each.id})
-                    next_wo.update({planning_previous_wo:workorder})
+                    next_wo.update({planning_previous_wo: workorder})
                     planning_previous_wo = workorder
-            for workorder,next_workorder in next_wo.items():
+            for workorder, next_workorder in next_wo.items():
                 try:
-                    workorder.write({'next_work_order_id':next_workorder.id})
+                    workorder.write({'next_work_order_id': next_workorder.id})
                 except AttributeError as ae:
                     continue
             for order in orders_to_plan:
@@ -184,6 +192,7 @@ class MrpProductionPlanning(models.Model):
             mo.date_planned_finished = max(mo.workorder_ids.mapped("date_planned_finished"))
 
    """
+
     def show_planned_workorder_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
@@ -192,11 +201,11 @@ class MrpProductionPlanning(models.Model):
             'view_mode': 'calendar,tree',
             'views': [(self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
                       (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
-                      (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'),],
+                      (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ],
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',
             'target': 'current',
-            'context': {'default_planning_id': self.id,},
+            'context': {'default_planning_id': self.id, },
             'domain': domain,
         }
 
@@ -216,39 +225,41 @@ class MrpProductionPlanningLine(models.Model):
     _name = 'mrp.production.planning.line'
     _description = 'Manufacturing planning line'
     _order = 'sequence'
+    _rec_name = 'mrp_production_request_id'
 
     planning_id = fields.Many2one('mrp.production.planning', required=True, ondelete='cascade')
     sequence = fields.Integer('Sequence', help="Used to manually re-order the line")
     mrp_production_request_id = fields.Many2one('mrp.production.request', string="Manufacturing request", required=True,
                                                 domain=[('state', '=', 'validated')])
     product_id = fields.Many2one('product.product', 'Product', related='mrp_production_request_id.product_id')
-    quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure',store=True,readonly=False)
+    quantity = fields.Float(string="Requested Quantity", digits='Product Unit of Measure', store=True, readonly=False)
     product_uom_id = fields.Many2one('uom.uom', 'Product Unit of Measure',
                                      related='mrp_production_request_id.product_uom_id')
     origin = fields.Char('Source', related='mrp_production_request_id.origin')
     date_request = fields.Datetime('Date', related='mrp_production_request_id.date_request')
     date_desired = fields.Datetime('Desired Date', related='mrp_production_request_id.date_desired')
-    quantity_produced = fields.Float(string='Produced Quantity',related='mrp_production_request_id.quantity_produced')
-    planning_state = fields.Selection(string='Planning Status',related='planning_id.state')
-    state = fields.Selection(string='Status',related='mrp_production_request_id.state')
+    quantity_produced = fields.Float(string='Produced Quantity', related='mrp_production_request_id.quantity_produced')
+    planning_state = fields.Selection(string='Planning Status', related='planning_id.state')
+    state = fields.Selection(string='Status', related='mrp_production_request_id.state')
     average = fields.Float(string="Average",
                            help="The value of this field will be used as priority indicator of the Manufacturing request in the planning")
+    merge_request_ids = fields.Many2many('mrp.production.planning.line','mrp_production_planning_line_merge_rel','parent_id','child_id', string='Merge with',
+                                         help='The manufacturing requests added here will be merged with the current Request '
+                                              'and will be exposed to planner as one single request')
 
     @api.model_create_multi
     def create(self, vals):
-        res = super(MrpProductionPlanningLine,self).create(vals)
+        res = super(MrpProductionPlanningLine, self).create(vals)
         for rec in res:
-            if rec.planning_state in ('done','cancel'):
+            if rec.planning_state in ('done', 'cancel'):
                 raise ValidationError(_("Can not add line to Done/Cancelled Planning!"))
         return res
 
     def unlink(self):
         for rec in self:
-            if rec.planning_state in ('done','cancel'):
+            if rec.planning_state in ('done', 'cancel'):
                 raise ValidationError(_("Can not remove line from Done/Cancelled Planning!"))
-        return super(MrpProductionPlanningLine,self).unlink()
-
-
+        return super(MrpProductionPlanningLine, self).unlink()
 
     @api.onchange('mrp_production_request_id')
     def _onchange_mrp_production_request_id(self):
@@ -283,3 +294,13 @@ class MrpProductionPlanningLine(models.Model):
         for line in sorted(lines_to_reorder, key=lambda l: l.average, reverse=True):
             line.sequence = seq
             seq += 1
+
+
+    def _get_sibling_lines(self):
+        """ The sibling lines are either the ones merged with me or the one I am merged with """
+        self.ensure_one()
+        sibling_lines = self
+        for line in self.merge_request_ids:
+            sibling_lines |= line._get_sibling_lines()
+        sibling_lines |= self.planning_id.line_ids.filtered(lambda l:self.id in l.merge_request_ids.ids)
+        return sibling_lines

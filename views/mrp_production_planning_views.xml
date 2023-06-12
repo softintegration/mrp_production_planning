@@ -139,6 +139,7 @@
                                     type="object" class="oe_highlight"
                                     groups="mrp_production_planning.group_mrp_production_planning_user"/>
                     </header>
+                    <field name="planning_id" invisible="1"/>
                     <field name="sequence" widget="handle"/>
                     <field name="mrp_production_request_id" options="{'no_create':True,'no_edit':True}"/>
                     <field name="date_request" readonly="1"/>
@@ -160,6 +161,10 @@
                            decoration-danger="state == 'cancel'"
                            widget="badge"
                            invisible="1"/>
+                    <field name="merge_request_ids" widget="many2many_tags" options="{'no_create':True,'no_edit':True}"
+                    domain="[('product_id','=',product_id),('planning_id','=',planning_id),('id','!=',id)]"
+
+                    />
                 </tree>
             </field>
         </record>
