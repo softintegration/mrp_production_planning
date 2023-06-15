@@ -61,6 +61,9 @@ class MrpProduction(models.Model):
                         'workcenter_id': workcenter.id,
                         'duration_expected': duration_expected,
                     }
+                # here we have to check if the we have to force the using of the default machine
+                if workorder.company_id.always_use_default_workcenter and workorder.workcenter_id == workcenter:
+                    break
 
             # If none of the workcenter are available, raise
             if best_finished_date == datetime.datetime.max:

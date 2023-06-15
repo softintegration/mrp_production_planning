@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 10:00+0000\n"
-"PO-Revision-Date: 2023-06-15 10:00+0000\n"
+"POT-Creation-Date: 2023-06-15 15:24+0000\n"
+"PO-Revision-Date: 2023-06-15 15:24+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -25,6 +25,13 @@ msgid ""
 " * Planned: The MR is planned.\n"
 " * Done: The MR is done, can't be update or deleted anymore.\n"
 " * Cancelled: The MR has been cancelled, can't be confirmed anymore."
+msgstr ""
+
+#. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.res_config_settings_view_form_inherited
+msgid ""
+"<span class=\"fa fa-lg fa-building-o\" title=\"Values set here are company-"
+"specific.\" groups=\"base.group_multi_company\"/>"
 msgstr ""
 
 #. module: mrp_production_planning
@@ -135,7 +142,7 @@ msgstr "Annuler"
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
 msgid "Canceled"
-msgstr ""
+msgstr "Annulé"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__cancel
@@ -144,9 +151,31 @@ msgid "Cancelled"
 msgstr "Annulée"
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,help:mrp_production_planning.field_res_config_settings__always_use_default_workcenter
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.res_config_settings_view_form_inherited
+msgid ""
+"Check this option if you want to force the planning to set the default "
+"workcenter specified in the bom instead of the best one (in terms of "
+"performance)."
+msgstr ""
+"Cochez cette option si vous souhaitez forcer le planning à utiliser toujours la machine par défaut "
+"spécifiée dans la nomenclature au lieu de la plus performante."
+
+
+#. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_res_company
+msgid "Companies"
+msgstr "Sociétés"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__company_id
 msgid "Company"
 msgstr "Société"
+
+#. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_res_config_settings
+msgid "Config Settings"
+msgstr "Paramètres de config"
 
 #. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
@@ -678,6 +707,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__message_unread_counter
 msgid "Unread Messages Counter"
 msgstr ""
+
+#. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_res_company__always_use_default_workcenter
+#: model:ir.model.fields,field_description:mrp_production_planning.field_res_config_settings__always_use_default_workcenter
+msgid "Use always the default workcenter"
+msgstr "Forcer l'utilisation de la machine par défaut"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning_line__sequence
