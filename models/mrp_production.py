@@ -10,6 +10,10 @@ from odoo.exceptions import UserError
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
 
+    plan_mrp_production_request_ids = fields.Many2many('mrp.production.request', 'mrp_production_request_mrp_production_plan'
+                                                      ,'mrp_production_id', 'mrp_production_request_id',
+                                                       help='The manufacturing requests that plan this Manufacturing order')
+
     def _plan_workorders(self, replan=False):
         """ Inherit this method just to add the possibility to force the date_start of the planning
         """
@@ -21,7 +25,7 @@ class MrpProduction(models.Model):
         qty_to_produce = max(self.product_qty - self.qty_produced, 0)
         qty_to_produce = self.product_uom_id._compute_quantity(qty_to_produce, self.product_id.uom_id)
         # here we have to force the start_date if imposed in the context
-        if self.env.context.get('force_start_date',False):
+        if self.env.context.get('force_start_date', False):
             start_date = self.date_planned_start
         else:
             start_date = max(self.date_planned_start, datetime.datetime.now())
@@ -81,3 +85,11 @@ class MrpProduction(models.Model):
             'date_planned_start': self.workorder_ids[0].date_planned_start,
             'date_planned_finished': self.workorder_ids[-1].date_planned_finished
         })
+
+    def unlink(self):
+        self._unplan()
+        return super(MrpProduction,self).unlink()
+
+
+    def _unplan(self):
+        return self.mapped("plan_mrp_production_request_ids")._action_unplan()

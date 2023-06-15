@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-12 22:06+0000\n"
-"PO-Revision-Date: 2023-06-12 22:06+0000\n"
+"POT-Creation-Date: 2023-06-15 10:00+0000\n"
+"PO-Revision-Date: 2023-06-15 10:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -17,10 +17,12 @@ msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_planning_line__state
+#: model:ir.model.fields,help:mrp_production_planning.field_mrp_production_request__state
 msgid ""
 " * Draft: The MR is not confirmed yet.\n"
 " * Waiting: The MR is confirmed but waiting for approving.\n"
 " * Validated: The MR is confirmed, the production order can be created.\n"
+" * Planned: The MR is planned.\n"
 " * Done: The MR is done, can't be update or deleted anymore.\n"
 " * Cancelled: The MR has been cancelled, can't be confirmed anymore."
 msgstr ""
@@ -136,6 +138,7 @@ msgid "Canceled"
 msgstr ""
 
 #. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__cancel
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 msgid "Cancelled"
 msgstr "Annulée"
@@ -185,13 +188,15 @@ msgstr "Nom affiché"
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__done
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 #, python-format
 msgid "Done"
-msgstr "Terminé"
+msgstr "Clôturée"
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__draft
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
 #, python-format
 msgid "Draft"
@@ -358,6 +363,11 @@ msgid "Manufacturing Plannings"
 msgstr "Planning de fabrication"
 
 #. module: mrp_production_planning
+#: model:ir.model,name:mrp_production_planning.model_mrp_production_request
+msgid "Manufacturing Request"
+msgstr "Demande de fabrication"
+
+#. module: mrp_production_planning
 #: model:ir.model,name:mrp_production_planning.model_mrp_production_planning
 #: model:ir.ui.menu,name:mrp_production_planning.menu_mrp_production_planning_action
 msgid "Manufacturing planning"
@@ -493,9 +503,20 @@ msgid "Operations"
 msgstr "Opérations"
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production__plan_mrp_production_request_ids
+msgid "Plan Mrp Production Request"
+msgstr ""
+
+#. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
 msgid "Plan manufacturing requests"
 msgstr "Planifier"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__planned
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_request_filter_view_inherited
+msgid "Planned"
+msgstr "Planifiée"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__planned_workorder_ids_count
@@ -603,6 +624,7 @@ msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__state
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_request__state
 msgid "State"
 msgstr "Status"
 
@@ -626,6 +648,11 @@ msgstr ""
 msgid ""
 "The manufacturing requests added here will be merged with the current "
 "Request and will be exposed to planner as one single request"
+msgstr ""
+
+#. module: mrp_production_planning
+#: model:ir.model.fields,help:mrp_production_planning.field_mrp_production__plan_mrp_production_request_ids
+msgid "The manufacturing requests that plan this Manufacturing order"
 msgstr ""
 
 #. module: mrp_production_planning
@@ -658,9 +685,19 @@ msgid "Used to manually re-order the line"
 msgstr "Utiliser pour ré-ordonner les demandes manuellement"
 
 #. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__validated
+msgid "Validated"
+msgstr "Validée"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__date_done
 msgid "Validation Date"
 msgstr "Date de validation"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__waiting
+msgid "Waiting"
+msgstr "En attente"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__website_message_ids

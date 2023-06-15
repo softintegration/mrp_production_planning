@@ -87,6 +87,10 @@ class MrpProductionPlanning(models.Model):
     def _remove_related_manufacturings(self):
         self._planned_manufacturing_orders().unlink()
 
+    def _plan_related_manufacturing_requests(self):
+        self.mapped("line_ids").mapped("mrp_production_request_id")._action_plan()
+
+
     def _check_lines_to_schedule(self):
         for each in self:
             if not each.line_ids:
@@ -147,7 +151,8 @@ class MrpProductionPlanning(models.Model):
                 already_used_lines.extend(sibling_lines.ids)
                 order = planning_line.mrp_production_request_id._action_make_production_order(
                     quantity=quantity_to_plan)
-                order.date_planned_start = each.date_start
+                order.write({'date_planned_start':each.date_start,
+                             'plan_mrp_production_request_ids':[(6,0,sibling_lines.mapped("mrp_production_request_id").ids)]})
                 orders_to_plan |= order
                 planning_previous_wo = False
                 for workorder in order.workorder_ids:
@@ -161,6 +166,7 @@ class MrpProductionPlanning(models.Model):
                     continue
             for order in orders_to_plan:
                 order._plan_workorders()
+        self._plan_related_manufacturing_requests()
 
     """def _plan_workorders(self):
         self.ensure_one()
