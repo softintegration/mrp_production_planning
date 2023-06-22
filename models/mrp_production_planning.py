@@ -28,7 +28,7 @@ class MrpProductionPlanning(models.Model):
                               states={'draft': [('readonly', False)]}, readonly=True)
     state = fields.Selection([('draft', _('Draft')),
                               ('in_progress', _('In progress')),
-                              ('done', _('Done')),
+                              ('done', _('Validated')),
                               ('cancel', _('Canceled'))], default='draft', required=True)
     line_ids = fields.One2many('mrp.production.planning.line', 'planning_id'
                                , states={'draft': [('readonly', False)], 'in_progress': [('readonly', False)]},
@@ -259,13 +259,13 @@ class MrpProductionPlanningLine(models.Model):
         res = super(MrpProductionPlanningLine, self).create(vals)
         for rec in res:
             if rec.planning_state in ('done', 'cancel'):
-                raise ValidationError(_("Can not add line to Done/Cancelled Planning!"))
+                raise ValidationError(_("Can not add line to Validated/Cancelled Planning!"))
         return res
 
     def unlink(self):
         for rec in self:
             if rec.planning_state in ('done', 'cancel'):
-                raise ValidationError(_("Can not remove line from Done/Cancelled Planning!"))
+                raise ValidationError(_("Can not remove line from Validated/Cancelled Planning!"))
         return super(MrpProductionPlanningLine, self).unlink()
 
     @api.onchange('mrp_production_request_id')

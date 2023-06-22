@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-15 15:24+0000\n"
-"PO-Revision-Date: 2023-06-15 15:24+0000\n"
+"POT-Creation-Date: 2023-06-22 10:21+0000\n"
+"PO-Revision-Date: 2023-06-22 10:21+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,7 @@ msgid ""
 " * Waiting: The MR is confirmed but waiting for approving.\n"
 " * Validated: The MR is confirmed, the production order can be created.\n"
 " * Planned: The MR is planned.\n"
-" * Done: The MR is done, can't be update or deleted anymore.\n"
+" * Validated: The MR is done, can't be update or deleted anymore.\n"
 " * Cancelled: The MR has been cancelled, can't be confirmed anymore."
 msgstr ""
 
@@ -114,14 +114,14 @@ msgstr ""
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
-msgid "Can not add line to Done/Cancelled Planning!"
-msgstr "Impossible d'ajouter une ligne dans un Planning Terminé/Annulé"
+msgid "Can not add line to Validated/Cancelled Planning!"
+msgstr "Impossible d'ajouter une ligne dans un Planning Validé/Annulé"
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
-msgid "Can not remove line from Done/Cancelled Planning!"
-msgstr "Impossible de supprimer une ligne dans un Planning Terminé/Annulé"
+msgid "Can not remove line from Validated/Cancelled Planning!"
+msgstr "Impossible de supprimer une ligne dans un Planning Validé/Annulé"
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
@@ -142,7 +142,7 @@ msgstr "Annuler"
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
 msgid "Canceled"
-msgstr "Annulé"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__cancel
@@ -158,9 +158,9 @@ msgid ""
 "workcenter specified in the bom instead of the best one (in terms of "
 "performance)."
 msgstr ""
-"Cochez cette option si vous souhaitez forcer le planning à utiliser toujours la machine par défaut "
-"spécifiée dans la nomenclature au lieu de la plus performante."
-
+"Cochez cette option si vous souhaitez forcer le planning à utiliser toujours"
+" la machine par défaut spécifiée dans la nomenclature au lieu de la plus "
+"performante."
 
 #. module: mrp_production_planning
 #: model:ir.model,name:mrp_production_planning.model_res_company
@@ -216,12 +216,10 @@ msgid "Display Name"
 msgstr "Nom affiché"
 
 #. module: mrp_production_planning
-#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__done
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_filter_view
-#, python-format
 msgid "Done"
-msgstr "Clôturée"
+msgstr "Validé"
 
 #. module: mrp_production_planning
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
@@ -235,11 +233,6 @@ msgstr "Brouillon"
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__in_progress
 msgid "En cours"
 msgstr ""
-
-#. module: mrp_production_planning
-#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__done
-msgid "Fait"
-msgstr "Terminé"
 
 #. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__message_follower_ids
@@ -527,6 +520,11 @@ msgid "Number of unread messages"
 msgstr ""
 
 #. module: mrp_production_planning
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.view_mrp_production_work_order_search_inherited
+msgid "Operation"
+msgstr ""
+
+#. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.workcenter_line_calendar
 msgid "Operations"
 msgstr "Opérations"
@@ -559,6 +557,7 @@ msgid "Planned workorders"
 msgstr "Ordres de travail planifié"
 
 #. module: mrp_production_planning
+#: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production__planning_id
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning_line__planning_id
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_workorder__planning_id
 msgid "Planning"
@@ -720,7 +719,9 @@ msgid "Used to manually re-order the line"
 msgstr "Utiliser pour ré-ordonner les demandes manuellement"
 
 #. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__validated
+#, python-format
 msgid "Validated"
 msgstr "Validée"
 
@@ -728,6 +729,11 @@ msgstr "Validée"
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__date_done
 msgid "Validation Date"
 msgstr "Date de validation"
+
+#. module: mrp_production_planning
+#: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_planning__state__done
+msgid "Validé"
+msgstr ""
 
 #. module: mrp_production_planning
 #: model:ir.model.fields.selection,name:mrp_production_planning.selection__mrp_production_request__state__waiting
