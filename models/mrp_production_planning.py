@@ -9,6 +9,7 @@ from datetime import datetime
 
 AUTHORISED_STATES_FOR_REMOVE = ('draft', 'cancel')
 DATE_ZERO = datetime.strptime('1970-01-01', DEFAULT_SERVER_DATE_FORMAT)
+STATES_TO_VALIDATE = ('in_progress',)
 
 
 class MrpProductionPlanning(models.Model):
@@ -22,7 +23,7 @@ class MrpProductionPlanning(models.Model):
     date_start = fields.Datetime(string="Date from", help="Manufacturing Planning date start", required=True,
                                  states={'draft': [('readonly', False)]}, readonly=True)
     date_done = fields.Datetime(string="Validation Date", help="Manufacturing Planning validation date", required=False,
-                                states={'draft': [('readonly', False)]}, readonly=True)
+                                states={'draft': [('readonly', False)],'in_progress': [('readonly', False)]}, readonly=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user,
                               states={'draft': [('readonly', False)]}, readonly=True)
@@ -59,13 +60,34 @@ class MrpProductionPlanning(models.Model):
                     planning_name=each.name, date_from=each.date_from, date_to=each.date_to,
                 ))"""
 
-    def action_validate(self):
+    def action_in_progress(self):
         # self._check_lines_to_schedule()
         for each in self:
             dynamic_prefix_fields = self._build_dynamic_prefix_fields()
             each.name = self.env['ir.sequence'].with_context(dynamic_prefix_fields=dynamic_prefix_fields).next_by_code(
                 self._name)
-        return self._action_validate()
+        return self._action_in_progress()
+
+    def action_validate(self):
+        self._check_validation()
+        self._confirm_planned_manufacturing_orders()
+        self._action_validate()
+
+    def _check_validation(self):
+        for each in self:
+            if each.state not in STATES_TO_VALIDATE:
+                raise ValidationError(_("Only In progress Planning(s) can be validated!"))
+            if not each.date_done:
+                raise ValidationError(_("Validation date is required!"))
+            if not self._planned_manufacturing_orders():
+                raise ValidationError(_("No planned manufacturing orders has been found!"))
+
+
+    def _confirm_planned_manufacturing_orders(self):
+        self._planned_manufacturing_orders().action_confirm()
+
+    def _action_validate(self):
+        self.write({'state':'done'})
 
     def _build_dynamic_prefix_fields(self):
         self.ensure_one()
@@ -74,7 +96,7 @@ class MrpProductionPlanning(models.Model):
             vals.update({field_name: getattr(self, field_name)})
         return vals
 
-    def _action_validate(self):
+    def _action_in_progress(self):
         self.write({'state': 'in_progress'})
 
     def action_cancel(self):
