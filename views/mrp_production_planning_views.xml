@@ -153,7 +153,7 @@
                     <field name="product_uom_id" optional="hide" readonly="1"/>
                     <field name="date_desired"/>
                     <field name="origin" optional="show" readonly="1"/>
-                    <field name="average" optional="hide" readonly="1"/>
+                    <field name="average" optional="show" readonly="1"/>
                     <field name="planning_state" invisible="1"/>
                     <field name="state"
                            decoration-bf="state == 'draft'"
