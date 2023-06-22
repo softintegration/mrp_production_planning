@@ -10,7 +10,7 @@
  'qweb': [],
  'description': False,
  'images': [],
- 'version': '1.0.2.8',
+ 'version': '1.0.2.9',
  'category': 'Manufacturing/Manufacturing',
  'demo': [],
  'depends': ['mrp_production_request','record_scheduling'],

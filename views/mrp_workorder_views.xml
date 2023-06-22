@@ -19,5 +19,19 @@
         </field>
     </record>
 
+    <!-- Mrp workorder filter view inherited-->
+
+    <record id="view_mrp_production_work_order_search_inherited" model="ir.ui.view">
+        <field name="name">mrp.production.work.order.search.inherited</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_work_order_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='workcenter_id']" position="after">
+                <field name="product_id"/>
+                <field name="name" string="Operation"/>
+            </xpath>
+        </field>
+    </record>
+
 
 </odoo>
