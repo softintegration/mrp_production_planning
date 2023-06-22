@@ -171,6 +171,41 @@
             </field>
         </record>
 
+        <record id="mrp_production_planning_line_tree_view_readonly" model="ir.ui.view">
+            <field name="name">mrp.production.planning.line.tree</field>
+            <field name="model">mrp.production.planning.line</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Plannings" editable="bottom" create="0" edit="0" delete="0">
+                    <field name="planning_id" invisible="1"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="mrp_production_request_id" options="{'no_create':True,'no_edit':True}"/>
+                    <field name="date_request" readonly="1"/>
+                    <field name="product_id" readonly="1"/>
+                    <field name="quantity" required="1"
+                           force_save="1"
+                           attrs="{'readonly':[('planning_state','not in',('draft','in_progress'))]}"/>
+                    <field name="quantity_produced" readonly="1"/>
+                    <field name="product_uom_id" optional="hide" readonly="1"/>
+                    <field name="date_desired"/>
+                    <field name="origin" optional="show" readonly="1"/>
+                    <field name="average" optional="show" readonly="1"/>
+                    <field name="planning_state" invisible="1"/>
+                    <field name="state"
+                           decoration-bf="state == 'draft'"
+                           decoration-warning="state == 'waiting'"
+                           decoration-info="state == 'validated'"
+                           decoration-success="state == 'done'"
+                           decoration-danger="state == 'cancel'"
+                           widget="badge"
+                           invisible="1"/>
+                    <field name="merge_request_ids" widget="many2many_tags" options="{'no_create':True,'no_edit':True}"
+                    domain="[('product_id','=',product_id),('planning_id','=',planning_id),('id','!=',id)]"
+
+                    />
+                </tree>
+            </field>
+        </record>
+
         <!-- Manufacturing Planning action -->
         <record id="mrp_production_planning_action" model="ir.actions.act_window">
             <field name="name">Manufacturing Plannings</field>

@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-22 11:17+0000\n"
-"PO-Revision-Date: 2023-06-22 11:17+0000\n"
+"POT-Creation-Date: 2023-06-22 13:25+0000\n"
+"PO-Revision-Date: 2023-06-22 13:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -303,6 +303,16 @@ msgid "In progress"
 msgstr "En cours"
 
 #. module: mrp_production_planning
+#: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
+#, python-format
+msgid ""
+"Inconsistency between the Requested Qty and the Planned Qty has been found "
+"for product %s"
+msgstr ""
+"Une incohérence entre la quantité demandée et la quantité à produire planifiée a été detecté "
+"pour l'article %s"
+
+#. module: mrp_production_planning
 #: model:ir.model.fields,field_description:mrp_production_planning.field_mrp_production_planning__message_is_follower
 msgid "Is Follower"
 msgstr ""
@@ -380,6 +390,7 @@ msgstr "Date de validation du planning de fabrication"
 #: model:ir.actions.act_window,name:mrp_production_planning.mrp_production_planning_action
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_form_view
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_line_tree_view
+#: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_line_tree_view_readonly
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.mrp_production_planning_tree_view
 msgid "Manufacturing Plannings"
 msgstr "Planning de fabrication"
@@ -529,7 +540,8 @@ msgstr ""
 #: code:addons/mrp_production_planning/models/mrp_production_planning.py:0
 #, python-format
 msgid "Only In progress Planning(s) can be validated!"
-msgstr "Plannings dont le statut est différent de En cours ne peuvent être validés!"
+msgstr ""
+"Plannings dont le statut est différent de En cours ne peuvent être validés!"
 
 #. module: mrp_production_planning
 #: model_terms:ir.ui.view,arch_db:mrp_production_planning.view_mrp_production_work_order_search_inherited

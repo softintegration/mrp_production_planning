@@ -6,6 +6,7 @@ from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.tools.misc import DEFAULT_SERVER_DATE_FORMAT
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
+from odoo.tools.float_utils import float_is_zero
 
 AUTHORISED_STATES_FOR_REMOVE = ('draft', 'cancel')
 DATE_ZERO = datetime.strptime('1970-01-01', DEFAULT_SERVER_DATE_FORMAT)
@@ -23,7 +24,8 @@ class MrpProductionPlanning(models.Model):
     date_start = fields.Datetime(string="Date from", help="Manufacturing Planning date start", required=True,
                                  states={'draft': [('readonly', False)]}, readonly=True)
     date_done = fields.Datetime(string="Validation Date", help="Manufacturing Planning validation date", required=False,
-                                states={'draft': [('readonly', False)],'in_progress': [('readonly', False)]}, readonly=True)
+                                states={'draft': [('readonly', False)], 'in_progress': [('readonly', False)]},
+                                readonly=True)
     company_id = fields.Many2one('res.company', required=True, readonly=True, default=lambda self: self.env.company)
     user_id = fields.Many2one('res.users', string='Responsible', default=lambda self: self.env.user,
                               states={'draft': [('readonly', False)]}, readonly=True)
@@ -50,6 +52,11 @@ class MrpProductionPlanning(models.Model):
     def _compute_line_ids_count(self):
         for each in self:
             each.line_ids_count = len(each.line_ids)
+
+    def _get_requested_qty_by_product(self, product_id, product_uom_id):
+        self.ensure_one()
+        return sum(self.line_ids.filtered(
+            lambda pl: pl.product_id.id == product_id and pl.product_uom_id.id == product_uom_id).mapped("quantity"))
 
     """@api.constrains('date_from', 'date_to')
     def _check_dates(self):
@@ -81,13 +88,19 @@ class MrpProductionPlanning(models.Model):
                 raise ValidationError(_("Validation date is required!"))
             if not self._planned_manufacturing_orders():
                 raise ValidationError(_("No planned manufacturing orders has been found!"))
-
+            for order in self._planned_manufacturing_orders():
+                # difference between the quantity requested and the quantity planned in orders
+                diff = order.product_qty - each._get_requested_qty_by_product(order.product_id.id,
+                                                                              order.product_uom_id.id)
+                if not float_is_zero(diff, precision_rounding=order.product_uom_id.rounding):
+                    raise ValidationError(
+                        _("Inconsistency between the Requested Qty and the Planned Qty has been found for product %s") % order.product_id.display_name)
 
     def _confirm_planned_manufacturing_orders(self):
         self._planned_manufacturing_orders().action_confirm()
 
     def _action_validate(self):
-        self.write({'state':'done'})
+        self.write({'state': 'done'})
 
     def _build_dynamic_prefix_fields(self):
         self.ensure_one()
@@ -111,7 +124,6 @@ class MrpProductionPlanning(models.Model):
 
     def _plan_related_manufacturing_requests(self):
         self.mapped("line_ids").mapped("mrp_production_request_id")._action_plan()
-
 
     def _check_lines_to_schedule(self):
         for each in self:
@@ -141,10 +153,14 @@ class MrpProductionPlanning(models.Model):
     def show_line_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
+        views = [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'), ]
+        if self.state in ('done', 'cancel'):
+            views = [
+                (self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view_readonly').id, 'tree'), ]
         return {
             'name': _('Manufacturing requests to plan'),
             'view_mode': 'tree',
-            'views': [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'), ],
+            'views': views,
             'res_model': 'mrp.production.planning.line',
             'type': 'ir.actions.act_window',
             'target': 'current',
@@ -173,9 +189,10 @@ class MrpProductionPlanning(models.Model):
                 already_used_lines.extend(sibling_lines.ids)
                 order = planning_line.mrp_production_request_id._action_make_production_order(
                     quantity=quantity_to_plan)
-                order.write({'planning_id':planning_line.planning_id.id,
-                             'date_planned_start':each.date_start,
-                             'plan_mrp_production_request_ids':[(6,0,sibling_lines.mapped("mrp_production_request_id").ids)]})
+                order.write({'planning_id': planning_line.planning_id.id,
+                             'date_planned_start': each.date_start,
+                             'plan_mrp_production_request_ids': [
+                                 (6, 0, sibling_lines.mapped("mrp_production_request_id").ids)]})
                 orders_to_plan |= order
                 planning_previous_wo = False
                 for workorder in order.workorder_ids:
@@ -225,12 +242,15 @@ class MrpProductionPlanning(models.Model):
     def show_planned_workorder_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
+        views = [(self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
+                 (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
+                 (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ]
+        if self.state in ('done', 'cancel'):
+            views[1] = (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree')
         return {
             'name': _('Planned workorders'),
             'view_mode': 'calendar,tree',
-            'views': [(self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
-                      (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
-                      (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ],
+            'views': views,
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',
             'target': 'current',
@@ -272,7 +292,8 @@ class MrpProductionPlanningLine(models.Model):
     state = fields.Selection(string='Status', related='mrp_production_request_id.state')
     average = fields.Float(string="Average",
                            help="The value of this field will be used as priority indicator of the Manufacturing request in the planning")
-    merge_request_ids = fields.Many2many('mrp.production.planning.line','mrp_production_planning_line_merge_rel','parent_id','child_id', string='Merge with',
+    merge_request_ids = fields.Many2many('mrp.production.planning.line', 'mrp_production_planning_line_merge_rel',
+                                         'parent_id', 'child_id', string='Merge with',
                                          help='The manufacturing requests added here will be merged with the current Request '
                                               'and will be exposed to planner as one single request')
 
@@ -324,12 +345,11 @@ class MrpProductionPlanningLine(models.Model):
             line.sequence = seq
             seq += 1
 
-
     def _get_sibling_lines(self):
         """ The sibling lines are either the ones merged with me or the one I am merged with """
         self.ensure_one()
         sibling_lines = self
         for line in self.merge_request_ids:
             sibling_lines |= line._get_sibling_lines()
-        sibling_lines |= self.planning_id.line_ids.filtered(lambda l:self.id in l.merge_request_ids.ids)
+        sibling_lines |= self.planning_id.line_ids.filtered(lambda l: self.id in l.merge_request_ids.ids)
         return sibling_lines
