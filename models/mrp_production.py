@@ -13,6 +13,7 @@ class MrpProduction(models.Model):
     plan_mrp_production_request_ids = fields.Many2many('mrp.production.request', 'mrp_production_request_mrp_production_plan'
                                                       ,'mrp_production_id', 'mrp_production_request_id',
                                                        help='The manufacturing requests that plan this Manufacturing order')
+    planning_id = fields.Many2one('mrp.production.planning',string='Planning')
 
     def _plan_workorders(self, replan=False):
         """ Inherit this method just to add the possibility to force the date_start of the planning

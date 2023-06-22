@@ -10,7 +10,7 @@
  'qweb': [],
  'description': False,
  'images': [],
- 'version': '1.0.2.9',
+ 'version': '1.0.2.10',
  'category': 'Manufacturing/Manufacturing',
  'demo': [],
  'depends': ['mrp_production_request','record_scheduling'],
@@ -22,6 +22,7 @@
      'views/scheduling_rule_views.xml',
      'views/mrp_workorder_views.xml',
      'views/mrp_production_request_views.xml',
+     'views/mrp_production_views.xml',
      'views/res_config_settings_views.xml'
     ],
  'license': 'LGPL-3',

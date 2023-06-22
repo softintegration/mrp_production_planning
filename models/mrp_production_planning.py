@@ -151,7 +151,8 @@ class MrpProductionPlanning(models.Model):
                 already_used_lines.extend(sibling_lines.ids)
                 order = planning_line.mrp_production_request_id._action_make_production_order(
                     quantity=quantity_to_plan)
-                order.write({'date_planned_start':each.date_start,
+                order.write({'planning_id':planning_line.planning_id.id,
+                             'date_planned_start':each.date_start,
                              'plan_mrp_production_request_ids':[(6,0,sibling_lines.mapped("mrp_production_request_id").ids)]})
                 orders_to_plan |= order
                 planning_previous_wo = False
