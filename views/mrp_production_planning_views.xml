@@ -207,6 +207,19 @@
             </field>
         </record>
 
+        <!-- Manufacturing Planning line filter view -->
+        <record id="mrp_production_planning_line_filter_view" model="ir.ui.view">
+            <field name="name">mrp.production.planning.line.filter.view</field>
+            <field name="model">mrp.production.planning.line</field>
+            <field name="arch" type="xml">
+                <search string="Search Manufacturing planning lines">
+                    <field name="mrp_production_request_id"/>
+                    <field name="product_id"/>
+                    <field name="origin"/>
+                </search>
+            </field>
+        </record>
+
         <!-- Manufacturing Planning action -->
         <record id="mrp_production_planning_action" model="ir.actions.act_window">
             <field name="name">Manufacturing Plannings</field>

@@ -153,10 +153,12 @@ class MrpProductionPlanning(models.Model):
     def show_line_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
-        views = [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'), ]
+        views = [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'),
+                 (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id,'search')]
         if self.state in ('done', 'cancel'):
             views = [
-                (self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view_readonly').id, 'tree'), ]
+                (self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view_readonly').id, 'tree'),
+                (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id,'search')]
         return {
             'name': _('Manufacturing requests to plan'),
             'view_mode': 'tree',
