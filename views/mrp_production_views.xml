@@ -14,5 +14,33 @@
         </field>
     </record>
 
+    <record id="mrp_production_gantt_view" model="ir.ui.view">
+        <field name="name">mrp.production.gantt.view</field>
+        <field name="model">mrp.production</field>
+        <field name="arch" type="xml">
+            <ganttaps
+                    cp_detail="product_id"
+                    date_start="date_planned_start"
+                    date_stop="date_planned_finished"
+                    date_deadline = "date_deadline"
+                    duration="production_duration_expected"
+                    string="Product manufacturing"
+                    name="product_id"
+                    state="state"
+                    default_group_by="product_id"
+                    color_gantt="product_id">
+                <field name="product_id" invisible="1"/>
+                <field name="name"/>
+                <field name="product_qty"/>
+                <field name="product_uom_id"/>
+                <field name="origin"/>
+            </ganttaps>
+        </field>
+    </record>
+
+    <record id="mrp.mrp_production_action" model="ir.actions.act_window">
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,ganttaps</field>
+    </record>
+
 
 </odoo>

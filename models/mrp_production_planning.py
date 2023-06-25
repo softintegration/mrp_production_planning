@@ -244,14 +244,15 @@ class MrpProductionPlanning(models.Model):
     def show_planned_workorder_ids(self):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
-        views = [(self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
+        views = [(self.env.ref('mrp_production_planning.mrp_workorder_gantt_view').id, 'ganttaps'),
+                 (self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
                  (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
                  (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ]
         if self.state in ('done', 'cancel'):
             views[1] = (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree')
         return {
             'name': _('Planned workorders'),
-            'view_mode': 'calendar,tree',
+            'view_mode': 'ganttaps,calendar,tree',
             'views': views,
             'res_model': 'mrp.workorder',
             'type': 'ir.actions.act_window',

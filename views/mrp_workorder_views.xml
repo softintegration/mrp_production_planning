@@ -30,6 +30,10 @@
                 <field name="product_id"/>
                 <field name="name" string="Operation"/>
             </xpath>
+            <xpath expr="//filter[@name='product']" position="after">
+                <filter string="Manufacturing order" name="mrp_production" domain="[]" context="{'group_by': 'production_id'}"/>
+                <filter string="Operation" name="operation" domain="[]" context="{'group_by': 'operation_id'}"/>
+            </xpath>
         </field>
     </record>
 
@@ -48,6 +52,29 @@
             </xpath>
         </field>
     </record>
+
+    <record id="mrp_workorder_gantt_view" model="ir.ui.view">
+            <field name="name">mrp.workorder.gantt.view</field>
+            <field name="model">mrp.workorder</field>
+            <field name="arch" type="xml">
+                <ganttaps
+                          cp_detail="workcenter_id"
+                          date_start="date_planned_start"
+                          date_stop="date_planned_finished"
+                          date_deadline = "date_planned_finished"
+                          duration="duration_expected"
+                          string="Planned workorders"
+                          name="workcenter_id"
+						  state="state"
+						  default_group_by="workcenter_id"
+                          color_gantt="workcenter_id">
+					<field name="name" string="Operation"/>
+					<field name="product_id"/>
+                    <field name="production_id"/>
+                    <field name="planning_id"/>
+                </ganttaps>
+            </field>
+        </record>
 
 
 </odoo>
