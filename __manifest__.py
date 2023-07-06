@@ -10,7 +10,7 @@
  'qweb': [],
  'description': False,
  'images': [],
- 'version': '1.0.3',
+ 'version': '1.0.3.1',
  'category': 'Manufacturing/Manufacturing',
  'demo': [],
  'depends': ['mrp_production_request','record_scheduling','web_gantt_native'],

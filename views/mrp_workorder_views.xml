@@ -53,6 +53,18 @@
         </field>
     </record>
 
+    <record id="mrp_production_workorder_tree_editable_view_inherited2" model="ir.ui.view">
+        <field name="name">mrp.production.workorder.tree.editable.view.inherited2</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_tree_editable_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_planned_finished']" position="after">
+                <field name="calendar_duration_expected" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+
     <record id="mrp_workorder_gantt_view" model="ir.ui.view">
             <field name="name">mrp.workorder.gantt.view</field>
             <field name="model">mrp.workorder</field>
@@ -62,7 +74,7 @@
                           date_start="date_planned_start"
                           date_stop="date_planned_finished"
                           date_deadline = "date_planned_finished"
-                          duration="duration_expected"
+                          duration="calendar_duration_expected"
                           string="Planned workorders"
                           name="workcenter_id"
 						  state="state"

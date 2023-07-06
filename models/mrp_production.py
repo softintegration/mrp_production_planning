@@ -19,7 +19,6 @@ class MrpProduction(models.Model):
         """ Inherit this method just to add the possibility to force the date_start of the planning
         """
         self.ensure_one()
-
         if not self.workorder_ids:
             return
         # Schedule all work orders (new ones and those already created)
@@ -62,7 +61,7 @@ class MrpProduction(models.Model):
                         'workcenter_id': workcenter.id,
                         'duration_expected': duration_expected,
                     }
-                # here we have to check if the we have to force the using of the default machine
+                # here we have to check if we have to force the using of the default machine
                 if workorder.company_id.always_use_default_workcenter and workorder.workcenter_id == workcenter:
                     break
 
