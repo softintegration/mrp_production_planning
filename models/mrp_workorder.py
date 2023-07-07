@@ -22,6 +22,8 @@ class MrpWorkorder(models.Model):
             if each.date_planned_finished and each.date_planned_start:
                 calendar_duration_expected = each.date_planned_finished - each.date_planned_start
                 each.calendar_duration_expected = calendar_duration_expected.total_seconds()
+            else:
+                each.calendar_duration_expected = 0
 
 
 
