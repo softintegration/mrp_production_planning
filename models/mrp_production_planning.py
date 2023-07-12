@@ -246,11 +246,11 @@ class MrpProductionPlanning(models.Model):
         domain = [('planning_id', 'in', self.ids)]
         views = [(self.env.ref('mrp_production_planning.mrp_workorder_gantt_view').id, 'ganttaps'),
                  (self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
-                 (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree'),
-                 #(self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
+                 #(self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree'),
+                 (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
                  (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ]
-        #if self.state in ('done', 'cancel'):
-        #    views[2] = (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree')
+        if self.state in ('done', 'cancel'):
+            views[2] = (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree')
         return {
             'name': _('Planned workorders'),
             'view_mode': 'ganttaps,calendar,tree',
