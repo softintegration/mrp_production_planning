@@ -30,3 +30,9 @@ class MrpProductionRequest(models.Model):
 
     def _action_unplan(self):
         self.write({'state': 'validated'})
+
+    def _prepare_mrp_production(self, quantity=False, product_uom_id=False):
+        res = super(MrpProductionRequest,self)._prepare_mrp_production(quantity=quantity, product_uom_id=product_uom_id)
+        if self.env.context.get('mrp_production_request_ids',False):
+            res.update({'mrp_production_request_ids':self.env.context['mrp_production_request_ids']})
+        return res

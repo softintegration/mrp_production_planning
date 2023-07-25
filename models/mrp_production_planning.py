@@ -154,11 +154,11 @@ class MrpProductionPlanning(models.Model):
         self.ensure_one()
         domain = [('planning_id', 'in', self.ids)]
         views = [(self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view').id, 'tree'),
-                 (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id,'search')]
+                 (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id, 'search')]
         if self.state in ('done', 'cancel'):
             views = [
                 (self.env.ref('mrp_production_planning.mrp_production_planning_line_tree_view_readonly').id, 'tree'),
-                (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id,'search')]
+                (self.env.ref('mrp_production_planning.mrp_production_planning_line_filter_view').id, 'search')]
         return {
             'name': _('Manufacturing requests to plan'),
             'view_mode': 'tree',
@@ -187,9 +187,13 @@ class MrpProductionPlanning(models.Model):
                 if planning_line.id in already_used_lines:
                     continue
                 sibling_lines = planning_line._get_sibling_lines()
+                # in the case of multiple sale order sources we have to get all the references and put them in the generated manufacturing order
+                mrp_production_request_ids = [(6, 0, sibling_lines.mapped("mrp_production_request_id").ids)]
                 quantity_to_plan = sum(sibling_lines.mapped("quantity"))
                 already_used_lines.extend(sibling_lines.ids)
-                order = planning_line.mrp_production_request_id._action_make_production_order(
+                # using the context injection to prevent modifying super method
+                order = planning_line.mrp_production_request_id.with_context(
+                    mrp_production_request_ids=mrp_production_request_ids)._action_make_production_order(
                     quantity=quantity_to_plan)
                 order.write({'planning_id': planning_line.planning_id.id,
                              'date_planned_start': each.date_start,
@@ -246,7 +250,7 @@ class MrpProductionPlanning(models.Model):
         domain = [('planning_id', 'in', self.ids)]
         views = [(self.env.ref('mrp_production_planning.mrp_workorder_gantt_view').id, 'ganttaps'),
                  (self.env.ref('mrp_production_planning.workcenter_line_calendar').id, 'calendar'),
-                 #(self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree'),
+                 # (self.env.ref('mrp_production_planning.mrp_production_workorder_tree_view_readonly').id, 'tree'),
                  (self.env.ref('mrp.mrp_production_workorder_tree_view').id, 'tree'),
                  (self.env.ref('mrp.view_mrp_production_work_order_search').id, 'search'), ]
         if self.state in ('done', 'cancel'):
