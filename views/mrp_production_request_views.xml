@@ -27,6 +27,12 @@
                 <xpath expr="//field[@name='state']" position="replace">
                     <field name="state" widget="statusbar" statusbar_visible="draft,waiting,validated,planned,done"/>
                 </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="attributes">
+                    <attribute name="states">planned,waiting,validated</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_done']" position="attributes">
+                    <attribute name="states">planned,validated</attribute>
+                </xpath>
             </field>
         </record>
 
