@@ -123,7 +123,7 @@ class MrpProductionPlanning(models.Model):
         self._planned_manufacturing_orders().unlink()
 
     def _plan_related_manufacturing_requests(self):
-        self.mapped("line_ids").mapped("mrp_production_request_id")._action_plan()
+        self.mapped("line_ids").mapped("mrp_production_request_id").filtered(lambda pr:pr.state not in ('done','cancel'))._action_plan()
 
     def _check_lines_to_schedule(self):
         for each in self:
@@ -178,7 +178,7 @@ class MrpProductionPlanning(models.Model):
             orders_to_plan = self.env['mrp.production']
             if each.env.context.get('overwrite_exiting_lines', False) and each._planned_manufacturing_orders():
                 # unlink the Manufacturing order to auto removing the related workorders
-                each._planned_manufacturing_orders().unlink()
+                each._planned_manufacturing_orders().filtered(lambda mo:mo.state not in ('done','cancel')).unlink()
             # loop on planning lines by the sequence order (that has been calculated by the scheduler)
             next_wo = {}
             # planning lines can be merged so we have to track the merged lines because they can be used before that they are detected by the loop

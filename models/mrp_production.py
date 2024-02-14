@@ -95,4 +95,4 @@ class MrpProduction(models.Model):
 
 
     def _unplan(self):
-        return self.mapped("plan_mrp_production_request_ids")._action_unplan()
+        return self.mapped("plan_mrp_production_request_ids").filtered(lambda pr:pr.state == 'planned')._action_unplan()
