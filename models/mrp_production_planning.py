@@ -361,3 +361,17 @@ class MrpProductionPlanningLine(models.Model):
             sibling_lines |= line._get_sibling_lines()
         sibling_lines |= self.planning_id.line_ids.filtered(lambda l: self.id in l.merge_request_ids.ids)
         return sibling_lines
+
+    def show_production_request(self):
+        views = [
+            (self.env.ref('mrp_production_request.mrp_production_request_form_view').id, 'form'),]
+        return {
+            'name': _('Manufacturing Requests'),
+            'view_mode': 'form',
+            'views': views,
+            'res_model': 'mrp.production.request',
+            'type': 'ir.actions.act_window',
+            'target': 'current',
+            'context': {'default_planning_id': self.id},
+            'res_id': self.mrp_production_request_id.id,
+        }

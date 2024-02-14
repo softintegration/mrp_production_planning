@@ -144,7 +144,8 @@
                     </header>
                     <field name="planning_id" invisible="1"/>
                     <field name="sequence" widget="handle"/>
-                    <field name="mrp_production_request_id" options="{'no_create':True,'no_edit':True}"/>
+                    <button name="show_production_request" icon="fa-eye" type="object"/>
+                    <field name="mrp_production_request_id" options="{'no_create':True}"/>
                     <field name="date_request" readonly="1"/>
                     <field name="product_id" readonly="1"/>
                     <field name="quantity" required="1"
@@ -168,6 +169,7 @@
                     domain="[('product_id','=',product_id),('planning_id','=',planning_id),('id','!=',id)]"
 
                     />
+
                 </tree>
             </field>
         </record>
