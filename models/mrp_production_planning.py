@@ -11,6 +11,7 @@ from odoo.tools.float_utils import float_is_zero
 AUTHORISED_STATES_FOR_REMOVE = ('draft', 'cancel')
 DATE_ZERO = datetime.strptime('1970-01-01', DEFAULT_SERVER_DATE_FORMAT)
 STATES_TO_VALIDATE = ('in_progress',)
+QUANTITY_COHERENCE_CONTROL_STATES = ('draft',)
 
 
 class MrpProductionPlanning(models.Model):
@@ -88,7 +89,7 @@ class MrpProductionPlanning(models.Model):
                 raise ValidationError(_("Validation date is required!"))
             if not self._planned_manufacturing_orders():
                 raise ValidationError(_("No planned manufacturing orders has been found!"))
-            for order in self._planned_manufacturing_orders():
+            for order in self._planned_manufacturing_orders().filtered(lambda ord:ord.state in QUANTITY_COHERENCE_CONTROL_STATES):
                 # difference between the quantity requested and the quantity planned in orders
                 diff = order.product_qty - each._get_requested_qty_by_product(order.product_id.id,
                                                                               order.product_uom_id.id)
