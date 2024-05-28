@@ -10,10 +10,10 @@
  'qweb': [],
  'description': False,
  'images': [],
- 'version': '1.0.3.8',
+ 'version': '1.0.3.9',
  'category': 'Manufacturing/Manufacturing',
  'demo': [],
- 'depends': ['mrp_production_request','record_scheduling','web_gantt_native'],
+ 'depends': ['mrp_production_fix_replan','mrp_production_request','record_scheduling','web_gantt_native'],
  'data': [
      'security/mrp_production_planning_security.xml',
      'security/ir.model.access.csv',
